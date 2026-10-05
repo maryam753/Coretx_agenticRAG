@@ -1,0 +1,28 @@
+{
+  "testset": [
+    {
+      "question": "Which database was used to store and retrieve analysis history for PDF text extraction?",
+      "ground_truth": "SQLite",
+      "source": "Maryam_Arif_Resume_Updated.pdf",
+      "page": 2
+    },
+    {
+      "question": "Which vector database does Maryam Arif use in Retrieval-Augmented Generation pipelines?",
+      "ground_truth": "ChromaDB",
+      "source": "Maryam_Arif_Resume_Updated.pdf",
+      "page": 1
+    },
+    {
+      "question": "Which API was integrated into the AI-powered resume analyzer?",
+      "ground_truth": "Google Gemini API",
+      "source": "Maryam_Arif_Resume_Updated.pdf",
+      "page": 1
+    }
+  ],
+  "scores": {
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.987,
+    "context_precision": 1.0,
+    "context_recall": 1.0
+  }
+}

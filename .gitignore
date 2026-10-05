@@ -1,0 +1,20 @@
+# secrets — never commit these
+.env
+frontend/.env
+*.env.local
+
+# python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# node
+frontend/node_modules/
+frontend/dist/
+
+# app data (per-user documents, vector store — never committed, stays on the server/volume)
+backend/data/
+
+# os
+.DS_Store
