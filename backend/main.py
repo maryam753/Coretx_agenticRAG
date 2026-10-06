@@ -42,7 +42,10 @@ async def lifespan(app):
 app = FastAPI(title="Cortex API", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[
+        "http://localhost:5173",
+        "splendid-exploration-production-f3e9.up.railway.app",
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )
