@@ -15,11 +15,11 @@ from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
 from langchain_chroma import Chroma
 from langchain_groq import ChatGroq
 from backend.agent import build_agent
-from sentence_transformers import CrossEncoder
+from fastembed.rerank.cross_encoder import TextCrossEncoder
 from backend.guardrails import check_input
 from backend.persistence import get_chroma_client
 
@@ -58,20 +58,15 @@ def build_llm(model: str = GROQ_MODEL):
     )
 
 @lru_cache(maxsize=1)
-def get_reranker() -> CrossEncoder:
-    print("Loading reranker model: cross-encoder/ms-marco-MiniLM-L-6-v2")
-    return CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+def get_reranker() -> TextCrossEncoder:
+    print("Loading reranker model: Xenova/ms-marco-MiniLM-L-6-v2")
+    return TextCrossEncoder(model_name="Xenova/ms-marco-MiniLM-L-6-v2")
 
 
 @lru_cache(maxsize=1)
-def get_embedding_model() -> HuggingFaceEmbeddings:
+def get_embedding_model() -> FastEmbedEmbeddings:
     print(f"Loading embedding model: {EMBEDDING_MODEL}")
-    return HuggingFaceEmbeddings(
-        model_name=EMBEDDING_MODEL,
-        model_kwargs={"device": "cpu"},
-        encode_kwargs={"normalize_embeddings": True},
-    )
-
+    return FastEmbedEmbeddings(model_name=EMBEDDING_MODEL)
 
 def load_url_document(url: str) -> list[Document]:
     downloaded = trafilatura.fetch_url(url)
@@ -606,9 +601,7 @@ Partial summaries:
             return docs
 
         reranker = get_reranker()
-
-        pairs = [(query, doc.page_content) for doc in docs]
-        scores = reranker.predict(pairs)
+        scores = list(reranker.rerank(query, [doc.page_content for doc in docs]))
 
         ranked = sorted(zip(docs, scores), key=lambda x: x[1], reverse=True)
         return [doc for doc, score in ranked[: self.top_k]]
